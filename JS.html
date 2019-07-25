@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Insert CSS Bootstrap -->
+
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-10 offset-1">
+					<form action="javascript:void(0)" method="post" onsubmit="app.Add()">
+						<input type="text" id="addName" placeholder="name" />
+						<input type="text" id="addAlamat" placeholder="alamat">
+						<input type="submit" value="Add" />
+					</form>
+
+					<div id="formAction" role="aria-hidden" style="display: none">
+						<form action="javascript:void(0)" method="POST" id="saveEdit" onsubmit="app.Edit()">
+							<input type="text" id="editName" />
+							<input type="text" id="editAlamat" >
+							<input type="submit" value="Edit" />
+							<a onclick="CloseInput()" aria-label="Close">x</a>
+						</form>
+					</div>
+
+					<p id="hitung"></p>
+
+					<table class="table-responsive">
+						<tr>
+							<th>Name</th>
+							<th>Alamat</th>
+							<th>Action</th>
+						</tr>
+						<tbody id="name"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var app = new (function(data) {
+				this.getName = document.getElementById('name');
+				this.Name = []; // Tampung result array
+				this.Alamat = []
+
+				this.Hitung = function(data) {
+					var use = document.getElementById('hitung');
+					var name = 'Siswa';
+
+					if (data) {
+						use.innerHTML = data + ' ' + name;
+					} else {
+						use.innerHTML = 'Tidak ada ' + name;
+					}
+				};
+
+				this.ShowData = function() {
+					var data1 = ' ';
+					if (this.Name.length > 0 && this.Alamat.length > 0) {
+						for (i = 0; i < this.Name.length; i++) {
+							data1 += '<tr>';
+							data1 += '<td>' + this.Name[i] + '</td>';
+							data1 += '<td>'+ this.Alamat[i] +'</td>';
+							data1 += '<td> <button class="btn btn-info" onclick="app.Edit (' + i + ')">Edit </button> </td>';
+							data1 += '<td> <button class="btn btn-danger" onclick="app.Delete (' + i + ')">Delete </button> </td>';
+							data1 += '</tr>';
+						}
+					}
+					this.Hitung(this.Name.length);
+					return (this.getName.innerHTML = data1);
+				};
+
+				this.Add = function(name) {
+					var getIdAddName = document.getElementById('addName');
+					var getIdAddAlamat = document.getElementById('addAlamat')
+					var addName = getIdAddName.value;
+					var addAlamat = getIdAddAlamat.value
+
+					if (getIdAddName && getIdAddAlamat) {
+						this.Name.push(addName.trim());
+						this.Alamat.push(addAlamat.trim())
+
+						getIdAddName.value = ' ';
+						getIdAddAlamat.value = ' ';
+						this.ShowData();
+					}
+				};
+
+				this.Edit = function(item) {
+					var editName = document.getElementById('editName');
+					var editAlamat = document.getElementById('editAlamat')
+					
+					editName.value = this.Name[item];
+					editAlamat.value = this.Alamat[item]
+					document.getElementById('formAction').style.display = 'block';
+
+					gajelas = this;
+					document.getElementById('saveEdit').onsubmit = function() {
+						var newName = editName.value;
+						var newAlamat = editAlamat.value
+
+						if (newName) {
+							gajelas.Name.splice(item, 1, newName.trim());
+							gajelas.Alamat.splice(item, 1, newAlamat)
+							gajelas.ShowData();
+							CloseInput();
+						}
+					};
+				};
+
+				this.Delete = function(item) {
+					this.Name.splice(item, 1);
+					this.Alamat.splice(item, 1)
+					this.ShowData();
+				};
+			})();
+
+			function CloseInput() {
+				document.getElementById('formAction').style.display = 'none';
+			}
+		</script>
+	</body>
+</html>
